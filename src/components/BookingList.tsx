@@ -3,8 +3,11 @@ import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { AppDispatch, useAppSelector } from "@/redux/store"
 import { setBookings , removeBooking } from "@/redux/features/bookSlice"
+import { AuthOptions } from "next-auth"
+import { getServerSession } from "next-auth"
 import getAllBooking from "@/libs/getAllBooking"
 import Link from "next/link"
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions"
 
 export default function BookingList() {
     const dispatch = useDispatch<AppDispatch>()
@@ -13,8 +16,17 @@ export default function BookingList() {
     useEffect(() => {
         async function fetchBookings() {
             try {
-                const bookings = await getAllBooking()
-                dispatch(setBookings(bookings)) // Store fetched bookings in Redux
+                const session = await getServerSession(authOptions)
+                if (session?.user.token) {
+                    console.log(session.user.token)
+                    const bookings = await getAllBooking(session.user.token);
+                    dispatch(setBookings(bookings));} else {
+                        // จัดการกับกรณีที่ไม่มี token เช่น:
+                        console.error("No token found");
+                        // หรือ redirect ไปยังหน้า login:
+                        // router.push("/login");
+                    }
+                // Store fetched bookings in Redux
             } catch (error) {
                 console.error("Error fetching bookings:", error)
             }
