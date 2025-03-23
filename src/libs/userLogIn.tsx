@@ -1,5 +1,5 @@
-export default async function userLogIn(userEmail:string, userPassword:string){
-    const response = await fetch("https://campground-backend-cyan.vercel.app/api/v1/auth/login",{
+export default async function userLogIn(userEmail: string, userPassword: string) {
+    const response = await fetch("https://campground-backend-cyan.vercel.app/api/v1/auth/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -9,9 +9,9 @@ export default async function userLogIn(userEmail:string, userPassword:string){
             password: userPassword,
         }),
     })
- 
-    if(!response.ok){
-        throw new Error("Failed to fetch venues")
+
+    if (!response.ok) {
+        throw new Error("Failed to log in")
     }
     return await response.json()
 }

@@ -6,40 +6,44 @@ import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import { WebStorage } from "redux-persist/lib/types";
 
 function createPersistStorage(): WebStorage {
-    const isServer =typeof window === 'undefined';
-    //Return noop storage
-    if(isServer){
-        return{
-            getItem(){
+    const isServer = typeof window === 'undefined';
+    // Return noop storage if on the server
+    if (isServer) {
+        return {
+            getItem() {
                 return Promise.resolve(null);
             },
-            setItem(){
+            setItem() {
                 return Promise.resolve();
             },
-            removeItem(){
+            removeItem() {
                 return Promise.resolve();
             },
         };
     }
     return createWebStorage('local');
 }
-const storage = createPersistStorage()
+
+const storage = createPersistStorage();
 
 const persistConfig = {
     key: "rootPersist",
-    storage
-}
-const rootReducer = combineReducers({bookSlice})
-const reduxPersistedReducer = persistReducer(persistConfig, rootReducer)
+    storage,
+};
+
+const rootReducer = combineReducers({ bookSlice });
+const reduxPersistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
     reducer: reduxPersistedReducer,
-    middleware: (getDefaultMiddleware)=> getDefaultMiddleware({
-        serializableCheck:{
-            ignoredActions:[FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        },
-    })
-})
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+        }),
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

@@ -7,33 +7,33 @@ import { useEffect } from "react";
 
 export default function CardPanel() {
 
-    const cardReducer = (venueList:Map<string, number >, action:{type:string, venueName:string, rating?: number})=>{
+    const cardReducer = (campgroundList:Map<string, number >, action:{type:string, campgroundName:string, rating?: number})=>{
         switch(action.type){
             case 'add':{
-                const newVenueList = new Map(venueList);
-                newVenueList.set(action.venueName, action.rating??0);
-                return newVenueList;
+                const newCampgroundList = new Map(campgroundList);
+                newCampgroundList.set(action.campgroundName, action.rating??0);
+                return newCampgroundList;
             }
             case 'remove':{
-                const newVenueList = new Map(venueList);
-                newVenueList.delete(action.venueName);
-                return newVenueList;
+                const newCampgroundList = new Map(campgroundList);
+                newCampgroundList.delete(action.campgroundName);
+                return newCampgroundList;
             }
-            default: return venueList
+            default: return campgroundList
         }
     }
 
-    let defaultVenue = new Map<string, number>([
+    let defaultCampground = new Map<string, number>([
         ["The Bloom Pavilion", 0 ],
         ["Spark Space", 0 ],
         ["The Grand Table", 0 ],
     ]);
 
-    const [venueList, dispatchCompare] = useReducer(cardReducer, defaultVenue)
+    const [campgroundList, dispatchCompare] = useReducer(cardReducer, defaultCampground)
 
-    //Mock data venue
+    //Mock data campground
 
-    const mockVenueRepo = [{vid:"001", name:"The Bloom Pavilion", imgSrc:"/img/bloom.jpg" },
+    const mockCampgroundRepo = [{vid:"001", name:"The Bloom Pavilion", imgSrc:"/img/bloom.jpg" },
         {vid:"002", name:"Spark Space", imgSrc:"/img/sparkspace.jpg"},
         {vid:"003", name:"The Grand Table", imgSrc:"/img/grandtable.jpg"}]
 
@@ -42,24 +42,24 @@ export default function CardPanel() {
             <div style={{margin:"20px", display:"flex", flexDirection:"row", alignContent:"space-around",justifyContent:"space-around",flexWrap:"wrap"}}>
                 
                 {
-                    mockVenueRepo.map((venueCardItem)=>(
-                        <Link href={`venue/${venueCardItem.vid}`} className="w-1/5" passHref>
-                        <Card venueName={venueCardItem.name} imgSrc={venueCardItem.imgSrc}
-                        onCompare={(venue:string, newRating:number)=>dispatchCompare({type:'add',venueName:venue, rating:newRating })}
-                        />
+                    mockCampgroundRepo.map((campgroundCardItem)=>( 
+                        <Link href={`campground/${campgroundCardItem.vid}`} className="w-1/5" passHref>
+                            <Card campgroundName={campgroundCardItem.name} imgSrc={campgroundCardItem.imgSrc}
+                            onCompare={(campground:string, newRating:number)=>dispatchCompare({type:'add', campgroundName:campground, rating:newRating })}
+                            />
                         </Link>
                     ))
                 }
 
             </div>
             <div className="w-full text-xl font-medium">
-                Venue List with Ratings :{venueList.size}
+                Campground List with Ratings :{campgroundList.size}
             </div>
             <div>
-                {Array.from(venueList).map(([venueName, rating]) => (
-                    <div data-testid={venueName} key={venueName} 
-                    onClick={()=>dispatchCompare({type:'remove', venueName:venueName})}>
-                    {venueName}: {rating}
+                {Array.from(campgroundList).map(([campgroundName, rating]) => (
+                    <div data-testid={campgroundName} key={campgroundName} 
+                    onClick={()=>dispatchCompare({type:'remove', campgroundName:campgroundName})}>
+                    {campgroundName}: {rating}
                     </div>
                 ))}
             </div>
