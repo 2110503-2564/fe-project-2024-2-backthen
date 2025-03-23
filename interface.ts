@@ -12,6 +12,19 @@ export interface CampgroundItem {
   id: string;
 }
 
+
+// _id
+// name
+// address
+// district
+// province
+// postalcode
+// tel
+//++picture++
+//++dailyrate++
+// __v
+//++id++
+
 export interface CampgroundJson {
   success: boolean;
   count: number;
