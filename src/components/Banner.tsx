@@ -23,7 +23,7 @@ export default function Banner () {
             </div>
             {
                 session? <div className='z-30 absolute top-5 right-10 font-semibold text-cyan-800 text-xl'>
-                Welcome {session.user?.token}</div>:null
+                Welcome</div>:null
             }
             <button className='bg-white text-cyan-600 border border-cyan-600 font-semibold py-2 px-2 m-2 rounded z-30 absolute bottom-0 right-0 hover:bg-cyan-600 hover:text-white hover:border-transparent'
             onClick={(e)=>{e.stopPropagation(); router.push('/venue')}}>
