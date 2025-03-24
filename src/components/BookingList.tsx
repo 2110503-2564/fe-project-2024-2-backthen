@@ -2,37 +2,35 @@
 import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { AppDispatch, useAppSelector } from "@/redux/store"
-import { setBookings , removeBooking } from "@/redux/features/bookSlice"
-import { AuthOptions } from "next-auth"
-import { getServerSession } from "next-auth"
+import { setBookings, removeBooking } from "@/redux/features/bookSlice"
+import { useSession } from "next-auth/react" // Import useSession for client-side session
 import getAllBooking from "@/libs/getAllBooking"
 import Link from "next/link"
-import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions"
 
 export default function BookingList() {
     const dispatch = useDispatch<AppDispatch>()
     const bookingItems = useAppSelector((state) => state.bookSlice.bookItems) // Get bookings from Redux
+    const { data: session, status } = useSession() // useSession hook to get session data
 
     useEffect(() => {
         async function fetchBookings() {
-            try {
-                const session = await getServerSession(authOptions)
-                if (session?.user.token) {
+            if (status === "authenticated" && session?.user.token) {
+                try {
                     console.log(session.user.token)
-                    const bookings = await getAllBooking(session.user.token);
-                    dispatch(setBookings(bookings));} else {
-                        // จัดการกับกรณีที่ไม่มี token เช่น:
-                        console.error("No token found");
-                        // หรือ redirect ไปยังหน้า login:
-                        // router.push("/login");
-                    }
-                // Store fetched bookings in Redux
-            } catch (error) {
-                console.error("Error fetching bookings:", error)
+                    const bookings = await getAllBooking(session.user.token)
+                    dispatch(setBookings(bookings)) // Store bookings in Redux
+                } catch (error) {
+                    console.error("Error fetching bookings:", error)
+                }
+            } else {
+                console.error("No token found or session not authenticated")
             }
         }
-        fetchBookings()
-    }, [dispatch]) // Runs once when component mounts
+
+        if (status === "authenticated") {
+            fetchBookings()
+        }
+    }, [dispatch, session, status]) // Dependency on session and status
 
     return (
         <>
