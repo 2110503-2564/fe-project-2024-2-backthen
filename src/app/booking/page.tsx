@@ -1,22 +1,42 @@
 "use client"
-import { TextField, Select, MenuItem, Button } from "@mui/material"
+import { TextField, Select, MenuItem, Button, CircularProgress } from "@mui/material"
 import DateReserve from "@/components/DateReserve"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import dayjs, { Dayjs } from "dayjs"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "@/redux/store"
-import { BookingItem } from "../../../interface"
+import { BookingItem, CampgroundItem } from "../../../interface"
 import { addBooking } from "@/redux/features/bookSlice"
 import createBooking from "@/libs/createBooking"
-import { useSession } from "next-auth/react"  // To get the token from session
+import { useSession } from "next-auth/react"
 
 export default function Form() {
-  const { data: session } = useSession() // Get the session
+  const { data: session } = useSession()
   const [bookDate, setBookDate] = useState<Dayjs | null>(null)
   const [nameLastname, setNameLastname] = useState("")
   const [campground, setCampground] = useState("")
   const [tel, setTel] = useState("")
+  const [campgrounds, setCampgrounds] = useState<CampgroundItem[]>([])
+  const [loading, setLoading] = useState(true)
   const dispatch = useDispatch<AppDispatch>()
+
+  // Fetch campgrounds when component mounts
+  useEffect(() => {
+    const fetchCampgrounds = async () => {
+      try {
+        // Adjust the URL to match your API endpoint
+        const response = await fetch("https://campground-backend-cyan.vercel.app/api/v1/campgrounds")
+        const data = await response.json()
+        setCampgrounds(data.data)
+        setLoading(false)
+      } catch (error) {
+        console.error("Error fetching campgrounds:", error)
+        setLoading(false)
+      }
+    }
+
+    fetchCampgrounds()
+  }, [])
 
   const makeBooking = async () => {
     if (!bookDate) {
@@ -27,12 +47,11 @@ export default function Form() {
     const item: BookingItem = {
       nameLastname,
       tel,
-      campground, // Ensure this is the correct campground ID
-      bookDate: dayjs(bookDate).format("YYYY/MM/DD"), // Format the date correctly
+      campground, // This should now be the campground ID from the database
+      bookDate: dayjs(bookDate).format("YYYY/MM/DD"),
     }
 
-    // Ensure the token is available in the session
-    const token = session?.user.token // Adjust this depending on how the token is stored
+    const token = session?.user.token
 
     if (!token) {
       console.error("No token found!")
@@ -40,9 +59,8 @@ export default function Form() {
     }
 
     try {
-      // Pass the item and token to the createBooking function
       const response = await createBooking(item, token)
-      dispatch(addBooking(response)) // Dispatch the response to Redux
+      dispatch(addBooking(response))
       console.log("Booking successful:", response)
     } catch (error) {
       console.error("Error creating booking:", error)
@@ -70,11 +88,19 @@ export default function Form() {
         id="campground"
         value={campground}
         onChange={(e) => setCampground(e.target.value)}
+        disabled={loading}
       >
-        <MenuItem value="Bloom">The Bloom Pavilion</MenuItem>
-        <MenuItem value="Spark">Spark Space</MenuItem>
-        <MenuItem value="GrandTable">The Grand Table</MenuItem>
+        {loading ? (
+          <MenuItem value="">Loading campgrounds...</MenuItem>
+        ) : (
+          campgrounds.map((camp: CampgroundItem) => (
+            <MenuItem key={camp.id} value={camp.id}>
+              {camp.name}
+            </MenuItem>
+          ))
+        )}
       </Select>
+      {loading && <CircularProgress size={20} sx={{ ml: 1 }} />}
       <br />
       <DateReserve onDateChange={(value) => setBookDate(value)} />
       <br />
@@ -82,6 +108,7 @@ export default function Form() {
         variant="contained" 
         color="primary" 
         onClick={makeBooking}
+        disabled={loading}
       >
         Book Campground
       </Button>
