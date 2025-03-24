@@ -7,9 +7,10 @@ export default async function createBooking(item: BookingItem, token: string) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`, // Adding Bearer token to Authorization header
     },
-    // body: JSON.stringify(item),
     body: JSON.stringify({
-        "apptDate": `${item.bookDate}`
+      apptDate: item.bookDate,  // Booking date
+      nameLastname: item.nameLastname,  // User's full name
+      tel: item.tel,  // User's contact number
     })
   });
 

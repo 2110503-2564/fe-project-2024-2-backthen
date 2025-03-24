@@ -24,7 +24,6 @@ export default function Form() {
   useEffect(() => {
     const fetchCampgrounds = async () => {
       try {
-        // Adjust the URL to match your API endpoint
         const response = await fetch("https://campground-backend-cyan.vercel.app/api/v1/campgrounds")
         const data = await response.json()
         setCampgrounds(data.data)
@@ -44,6 +43,7 @@ export default function Form() {
       return
     }
 
+    // Prepare the booking data to send to the backend
     const item: BookingItem = {
       nameLastname,
       tel,
@@ -69,26 +69,36 @@ export default function Form() {
 
   return (
     <main>
+      {/* Name and Lastname input */}
       <TextField
         variant="standard"
         name="Name-Lastname"
         label="Name-Lastname"
         value={nameLastname}
         onChange={(e) => setNameLastname(e.target.value)}
+        fullWidth
       />
+      <br />
+
+      {/* Contact Number input */}
       <TextField
         variant="standard"
         name="Contact-Number"
         label="Contact-Number"
         value={tel}
         onChange={(e) => setTel(e.target.value)}
+        fullWidth
       />
+      <br />
+
+      {/* Campground selection */}
       <Select
         variant="standard"
         id="campground"
         value={campground}
         onChange={(e) => setCampground(e.target.value)}
         disabled={loading}
+        fullWidth
       >
         {loading ? (
           <MenuItem value="">Loading campgrounds...</MenuItem>
@@ -102,13 +112,17 @@ export default function Form() {
       </Select>
       {loading && <CircularProgress size={20} sx={{ ml: 1 }} />}
       <br />
+
+      {/* Date Reserve component */}
       <DateReserve onDateChange={(value) => setBookDate(value)} />
       <br />
+
+      {/* Book button */}
       <Button 
         variant="contained" 
         color="primary" 
         onClick={makeBooking}
-        disabled={loading}
+        disabled={loading || !nameLastname || !tel || !bookDate || !campground}
       >
         Book Campground
       </Button>
