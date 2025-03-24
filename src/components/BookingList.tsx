@@ -45,7 +45,6 @@ export default function BookingList() {
             ) : (
                 bookingItems.map((booking) => (
                     <div key={booking.bookDate + booking.nameLastname} className="bg-slate-200 rounded px-5 mx-5 py-2 my-2">
-                        <div className="text-xl">Book_ID: {booking.booking_id}</div>
                         <div className="text-xl">Name-Lastname: {booking.nameLastname}</div>
                         <div className="text-xl">Tel: {booking.tel}</div>
                         <div className="text-xl">Campground: {booking.campground}</div>
@@ -56,7 +55,7 @@ export default function BookingList() {
                         >
                             Remove from My Booking
                         </button>
-                        <Link href={`/edit-booking/${booking.nameLastname}`}>
+                        <Link href={`/mybooking/${booking.booking_id}`}>
                             <button className="block rounded-md bg-sky-600 hover:bg-indigo-600 px-3 py-1 text-white shadow-sm">
                                 Edit
                             </button>
