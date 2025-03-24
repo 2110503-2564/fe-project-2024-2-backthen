@@ -44,6 +44,7 @@ export interface CampgroundJson {
 }
 
 export interface BookingItem {
+  booking_id: string ;
   nameLastname: string;
   tel: string;
   campground: string;

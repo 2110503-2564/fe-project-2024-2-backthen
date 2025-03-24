@@ -16,6 +16,7 @@ export const bookSlice = createSlice({
             console.log(action.payload);
             const data = action.payload.data;
             const bookingItems: BookingItem[] = data.map(item => ({
+                booking_id: item?._id || "",
                 nameLastname: item?.nameLastname || "", // เพิ่มการตรวจสอบ item
                 tel: item?.tel || "", // เพิ่มการตรวจสอบ item
                 campground: item?.campground?.name || "", // เพิ่มการตรวจสอบ item

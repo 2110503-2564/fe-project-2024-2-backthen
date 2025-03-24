@@ -45,6 +45,7 @@ export default function BookingList() {
             ) : (
                 bookingItems.map((booking) => (
                     <div key={booking.bookDate + booking.nameLastname} className="bg-slate-200 rounded px-5 mx-5 py-2 my-2">
+                        <div className="text-xl">Book_ID: {booking.booking_id}</div>
                         <div className="text-xl">Name-Lastname: {booking.nameLastname}</div>
                         <div className="text-xl">Tel: {booking.tel}</div>
                         <div className="text-xl">Campground: {booking.campground}</div>
