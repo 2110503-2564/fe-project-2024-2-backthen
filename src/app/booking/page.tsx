@@ -18,6 +18,7 @@ export default function Form() {
   const [tel, setTel] = useState("")
   const [campgrounds, setCampgrounds] = useState<CampgroundItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false) // To handle submit button loading
   const dispatch = useDispatch<AppDispatch>()
 
   // Fetch campgrounds when component mounts
@@ -45,7 +46,7 @@ export default function Form() {
 
     // Prepare the booking data to send to the backend
     const item: BookingItem = {
-      booking_id: "" ,
+      booking_id: "",
       nameLastname,
       tel,
       campground, // This should now be the campground ID from the database
@@ -59,12 +60,17 @@ export default function Form() {
       return
     }
 
+    // Set the submitting state to true to show loading indicator
+    setIsSubmitting(true)
+
     try {
       const response = await createBooking(item, token)
       dispatch(addBooking(response))
       console.log("Booking successful:", response)
+      setIsSubmitting(false) // Reset submitting state after success
     } catch (error) {
       console.error("Error creating booking:", error)
+      setIsSubmitting(false) // Reset submitting state in case of error
     }
   }
 
@@ -118,16 +124,16 @@ export default function Form() {
       <DateReserve onDateChange={(value) => setBookDate(value)} />
       <br />
 
-      {/* Book button */}
+      {/* Submit button */}
       <Button
         variant="contained"
         color="primary"
         onClick={makeBooking}
-        disabled={loading || !nameLastname || !tel || !bookDate || !campground}
+        disabled={loading || !nameLastname || !tel || !bookDate || !campground || isSubmitting}
         fullWidth
         sx={{ marginTop: 2 }}
       >
-        Book Campground
+        {isSubmitting ? <CircularProgress size={24} sx={{ color: 'white' }} /> : "Book Campground"}
       </Button>
     </main>
   )
