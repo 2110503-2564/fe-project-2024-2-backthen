@@ -4,22 +4,33 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { Link } from "@mui/material";
 
-export default async function TopMenu(){
+export default async function TopMenu() {
+  const session = await getServerSession(authOptions);
 
-    const session = await getServerSession(authOptions)
+  return (
+    <div className="h-[50px] bg-white fixed top-0 left-0 right-0 z-30 border-t border-b border-gray-300 flex items-center px-4">
+      {/* Sign-In/Sign-Out as TopMenuItem, positioned on the far left */}
+      {session ? (
+        <TopMenuItem title="Sign-Out of Me" pageRef="/api/auth/signout" />
+      ) : (
+        <TopMenuItem title="Sign-In" pageRef="/api/auth/signin" />
+      )}
 
-    return(
-        <div className="h-[50px] bg-white fixed top-0 left-0 right-0 z-30 border-t border-b border-gray-300 flex flex-row items-center flex justify-end">
-            {
-                session?<Link href='/api/auth/signout'><div className="flex items-center absolute left-0 h-[12.5%] text-cyan-600 text-sm ml-auto px-2">
-                Sign-Out of Me</div></Link>
-                :<Link href='/api/auth/signin'><div className="flex items-center absolute left-0 h-[12.5%] text-cyan-600 text-sm ml-auto px-2">
-                Sign-In</div></Link>
-            }
-            <div className="flex items-center absolute left-20 h-full text-cyan-600 text-sm ml-auto px-2"><TopMenuItem title='My Booking' pageRef="/mybooking" /></div>
-            <TopMenuItem title='Booking' pageRef="/booking"/>
-            <Image src={'/img/logo.png'} className="h-[100%] w-auto"
-            alt='logo' width={0} height={0} sizes="100vh"/>
-        </div>
-    )
+      {/* The rest of the menu items positioned to the right */}
+      <div className="ml-auto flex items-center space-x-4">
+        <TopMenuItem title="My Booking" pageRef="/mybooking" />
+        <TopMenuItem title="Booking" pageRef="/booking" />
+      </div>
+
+      {/* Logo */}
+      <Image
+        src={"/img/logo.png"}
+        className="h-[100%] w-auto"
+        alt="logo"
+        width={0}
+        height={0}
+        sizes="100vh"
+      />
+    </div>
+  );
 }
