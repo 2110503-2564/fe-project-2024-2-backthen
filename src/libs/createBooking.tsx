@@ -1,7 +1,7 @@
 import { BookingItem } from "../../interface"; 
 
 export default async function createBooking(item: BookingItem, token: string) {
-  const response = await fetch(`https://campground-backend-cyan.vercel.app/api/v1/campgrounds/67dfc98e6c6a4061c04613a1/appointments`, {
+  const response = await fetch(`https://campground-backend-cyan.vercel.app/api/v1/campgrounds/${item.campground}/appointments`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -9,7 +9,7 @@ export default async function createBooking(item: BookingItem, token: string) {
     },
     // body: JSON.stringify(item),
     body: JSON.stringify({
-        "apptDate": "2025-10-02"
+        "apptDate": `${item.bookDate}`
     })
   });
 
