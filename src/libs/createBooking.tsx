@@ -16,6 +16,7 @@ export default async function createBooking(item: BookingItem, token: string) {
 
   if (!response.ok) {
     const errorDetails = await response.text();  // Capture response text for error details
+    alert("Overbooked You've reached your limit.")
     throw new Error(`Failed to Create: ${errorDetails}`);
   }
 
