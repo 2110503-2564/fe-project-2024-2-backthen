@@ -1,5 +1,5 @@
 "use client"
-import { TextField, Select, MenuItem, Button, CircularProgress } from "@mui/material"
+import { TextField, Select, MenuItem, Button, CircularProgress, InputLabel, FormControl } from "@mui/material"
 import DateReserve from "@/components/DateReserve"
 import { useState, useEffect } from "react"
 import dayjs, { Dayjs } from "dayjs"
@@ -18,6 +18,7 @@ export default function Form() {
   const [tel, setTel] = useState("")
   const [campgrounds, setCampgrounds] = useState<CampgroundItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false) // To handle submit button loading
   const dispatch = useDispatch<AppDispatch>()
 
   // Fetch campgrounds when component mounts
@@ -45,7 +46,7 @@ export default function Form() {
 
     // Prepare the booking data to send to the backend
     const item: BookingItem = {
-      booking_id: "" ,
+      booking_id: "",
       nameLastname,
       tel,
       campground, // This should now be the campground ID from the database
@@ -59,73 +60,80 @@ export default function Form() {
       return
     }
 
+    // Set the submitting state to true to show loading indicator
+    setIsSubmitting(true)
+
     try {
       const response = await createBooking(item, token)
       dispatch(addBooking(response))
       console.log("Booking successful:", response)
+      setIsSubmitting(false) // Reset submitting state after success
     } catch (error) {
       console.error("Error creating booking:", error)
+      setIsSubmitting(false) // Reset submitting state in case of error
     }
   }
 
   return (
-    <main>
+    <main className="p-6 max-w-3xl mx-auto bg-white shadow-lg rounded-lg">
       {/* Name and Lastname input */}
       <TextField
-        variant="standard"
+        variant="outlined"
         name="Name-Lastname"
         label="Name-Lastname"
         value={nameLastname}
         onChange={(e) => setNameLastname(e.target.value)}
         fullWidth
+        margin="normal"
       />
-      <br />
 
       {/* Contact Number input */}
       <TextField
-        variant="standard"
+        variant="outlined"
         name="Contact-Number"
         label="Contact-Number"
         value={tel}
         onChange={(e) => setTel(e.target.value)}
         fullWidth
+        margin="normal"
       />
-      <br />
 
       {/* Campground selection */}
-      <Select
-        variant="standard"
-        id="campground"
-        value={campground}
-        onChange={(e) => setCampground(e.target.value)}
-        disabled={loading}
-        fullWidth
-      >
-        {loading ? (
-          <MenuItem value="">Loading campgrounds...</MenuItem>
-        ) : (
-          campgrounds.map((camp: CampgroundItem) => (
-            <MenuItem key={camp.id} value={camp.id}>
-              {camp.name}
-            </MenuItem>
-          ))
-        )}
-      </Select>
-      {loading && <CircularProgress size={20} sx={{ ml: 1 }} />}
-      <br />
+      <FormControl fullWidth variant="outlined" margin="normal">
+        <InputLabel>Campground</InputLabel>
+        <Select
+          label="Campground"
+          value={campground}
+          onChange={(e) => setCampground(e.target.value)}
+          disabled={loading}
+        >
+          {loading ? (
+            <MenuItem value="">Loading campgrounds...</MenuItem>
+          ) : (
+            campgrounds.map((camp: CampgroundItem) => (
+              <MenuItem key={camp.id} value={camp.id}>
+                {camp.name}
+              </MenuItem>
+            ))
+          )}
+        </Select>
+        {loading && <CircularProgress size={20} sx={{ ml: 1, mt: 1 }} />}
+      </FormControl>
 
       {/* Date Reserve component */}
       <DateReserve onDateChange={(value) => setBookDate(value)} />
       <br />
 
-      {/* Book button */}
-      <Button 
-        variant="contained" 
-        color="primary" 
+      {/* Submit button */}
+      <Button
+        variant="contained"
+        color="primary"
         onClick={makeBooking}
-        disabled={loading || !nameLastname || !tel || !bookDate || !campground}
+        disabled={loading || !nameLastname || !tel || !bookDate || !campground || isSubmitting}
+        fullWidth
+        sx={{ marginTop: 2 }}
       >
-        Book Campground
+        {isSubmitting ? <CircularProgress size={24} sx={{ color: 'white' }} /> : "Book Campground"}
       </Button>
     </main>
   )
