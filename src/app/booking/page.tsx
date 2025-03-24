@@ -45,6 +45,7 @@ export default function Form() {
 
     // Prepare the booking data to send to the backend
     const item: BookingItem = {
+      booking_id: "" ,
       nameLastname,
       tel,
       campground, // This should now be the campground ID from the database
