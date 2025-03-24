@@ -12,6 +12,14 @@ export interface CampgroundItem {
   id: string;
 }
 
+export interface BookFetchItem{
+  _id: string
+  apptDate: string
+  user: string
+  Campground: CampgroundItem
+  nameLastname: string
+  tel: string
+}
 
 // _id
 // name
@@ -29,7 +37,7 @@ export interface CampgroundJson {
   success: boolean;
   count: number;
   pagination: Object;
-  data: CampgroundItem[];
+  data: BookFetchItem[];
 }
 
 export interface BookingItem {

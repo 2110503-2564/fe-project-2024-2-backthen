@@ -18,7 +18,12 @@ export default function BookingList() {
                 try {
                     console.log(session.user.token)
                     const bookings = await getAllBooking(session.user.token)
-                    dispatch(setBookings(bookings)) // Store bookings in Redux
+                    if( bookings){
+                        dispatch(setBookings(bookings)) // Store bookings in Redux
+                    }else {
+                        console.log("Bookings data is undefined or null");
+                    }
+                    
                 } catch (error) {
                     console.error("Error fetching bookings:", error)
                 }
@@ -34,7 +39,8 @@ export default function BookingList() {
 
     return (
         <>
-            {bookingItems.length === 0 ? (
+        {bookingItems && Array.isArray(bookingItems) ? (
+            bookingItems.length === 0 ? (
                 <div className="text-center text-xl">No Campground Booking</div>
             ) : (
                 bookingItems.map((booking) => (
@@ -56,6 +62,8 @@ export default function BookingList() {
                         </Link>
                     </div>
                 ))
+            )):(
+                <div className="text-center text-xl">Loading...</div>
             )}
         </>
     )

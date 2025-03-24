@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { BookingItem } from "../../../interface";
+import { CampgroundJson } from "../../../interface";
 
 type BookState = {
     bookItems: BookingItem[]
@@ -11,8 +12,17 @@ export const bookSlice = createSlice({
     name: "book",
     initialState,
     reducers: {
-        setBookings: (state, action: PayloadAction<BookingItem[]>) => {
-            state.bookItems = action.payload
+        setBookings: (state, action: PayloadAction<CampgroundJson>) => {
+            console.log(action.payload);
+            const data = action.payload.data;
+            const bookingItems: BookingItem[] = data.map(item => ({
+                nameLastname: item?.nameLastname || "", // เพิ่มการตรวจสอบ item
+                tel: item?.tel || "", // เพิ่มการตรวจสอบ item
+                campground: item?.Campground?.name || "", // เพิ่มการตรวจสอบ item
+                bookDate: item?.apptDate || "", // เพิ่มการตรวจสอบ item
+            }));
+            state.bookItems = bookingItems;
+            console.log(bookingItems)
         },
         addBooking: (state, action: PayloadAction<BookingItem>) => {
             const remainBeforeAdd = state.bookItems.filter(obj => {
