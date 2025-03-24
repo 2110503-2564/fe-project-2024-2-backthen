@@ -21,8 +21,8 @@ export default function RegisterPage() {
     };
 
     return (
-        <div>
-            <h1>Register</h1>
+        <div className='text-center'><br/>
+            <h1 className='font-[Open_Sans] text-xl '>Register</h1>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="name">Name:</label>
@@ -40,7 +40,7 @@ export default function RegisterPage() {
                     <label htmlFor="password">Password:</label>
                     <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
-                <button type="submit">Register</button>
+                <button className='bg-white text-cyan-600 border border-cyan-600 font-semibold py-2 px-2 m-2 rounded z-30 absolute hover:bg-cyan-600 hover:text-white hover:border-transparent' type="submit">Register</button>
             </form>
             {message && <p>{message}</p>}
         </div>
