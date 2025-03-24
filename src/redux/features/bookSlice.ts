@@ -18,7 +18,7 @@ export const bookSlice = createSlice({
             const bookingItems: BookingItem[] = data.map(item => ({
                 nameLastname: item?.nameLastname || "", // เพิ่มการตรวจสอบ item
                 tel: item?.tel || "", // เพิ่มการตรวจสอบ item
-                campground: item?.Campground?.name || "", // เพิ่มการตรวจสอบ item
+                campground: item?.campground?.name || "", // เพิ่มการตรวจสอบ item
                 bookDate: item?.apptDate || "", // เพิ่มการตรวจสอบ item
             }));
             state.bookItems = bookingItems;

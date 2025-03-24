@@ -16,7 +16,10 @@ export interface BookFetchItem{
   _id: string
   apptDate: string
   user: string
-  Campground: CampgroundItem
+  campground:{
+    id: string
+    name: string
+  }
   nameLastname: string
   tel: string
 }
