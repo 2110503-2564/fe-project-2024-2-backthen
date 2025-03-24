@@ -33,7 +33,7 @@ export const bookSlice = createSlice({
             state.bookItems = remainBeforeAdd
             state.bookItems.push(action.payload)
         },
-        removeBooking: (state, action: PayloadAction<BookingItem>) => {
+        removeBookingPage: (state, action: PayloadAction<BookingItem>) => {
             const remainItems = state.bookItems.filter(obj => {
                 return ((obj.campground !== action.payload.campground)
                     || (obj.bookDate !== action.payload.bookDate)
@@ -56,5 +56,5 @@ export const bookSlice = createSlice({
     }
 })
 
-export const { addBooking, removeBooking ,editBooking,setBookings} = bookSlice.actions
+export const { addBooking, removeBookingPage ,editBooking,setBookings} = bookSlice.actions
 export default bookSlice.reducer
