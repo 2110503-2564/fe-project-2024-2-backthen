@@ -2,18 +2,17 @@
 import { useEffect, useState } from "react";
 import getBooking from "@/libs/getBooking";
 import { useSession } from "next-auth/react";
-import { CircularProgress, MenuItem, Select, TextField, Button } from "@mui/material";
-import { CampgroundItem } from "../../../../interface";
-import { Dayjs } from "dayjs";
-import DateReserve from "@/components/DateReserve"; // Assuming this is your date picker component
+import { CircularProgress, TextField, Button } from "@mui/material";
+import dayjs, { Dayjs } from "dayjs";
+import DateReserve from "@/components/DateReserve";
+import updateBooking from "@/libs/updateBooking";
+import { BookingItem } from "../../../../interface";
 
 export default function BookingDetailsPage({ params }: { params: { vid: string } }) {
     const { data: session, status } = useSession();
-    const [bookDate, setBookDate] = useState<Dayjs | null>(null);
-    const [nameLastname, setNameLastname] = useState("");
-    const [tel, setTel] = useState("");
+    const [details, setDetails] = useState<BookingItem | null>(null);
     const [loading, setLoading] = useState(true);
-    const [details,setDetails] = useState(Object);
+
     useEffect(() => {
         async function fetchBooking() {
             if (status !== "authenticated" || !session?.user?.token) return;
@@ -21,13 +20,7 @@ export default function BookingDetailsPage({ params }: { params: { vid: string }
             try {
                 const data = await getBooking(params.vid, session.user.token);
                 console.log("Fetched Booking Details:", data);
-
-                if (data) {
-                    setNameLastname(data.nameLastname);
-                    setTel(data.tel);
-                    setBookDate(data.bookDate);
-                    setDetails(data);
-                }
+                if (data) setDetails(data.data); // Ensure we're setting the correct structure
             } catch (error) {
                 console.error("Error fetching booking:", error);
             } finally {
@@ -38,46 +31,65 @@ export default function BookingDetailsPage({ params }: { params: { vid: string }
         fetchBooking();
     }, [params.vid, session, status]);
 
-    if (loading) return <div className="text-center text-xl">Loading...</div>;
-    console.log("Details Available" , details)
+    async function handleUpdate() {
+        if (!details || !session?.user?.token) return;
+
+        const updatedBooking: BookingItem = {
+            ...details, // Spread the existing details
+            bookDate: details.bookDate ? dayjs(details.bookDate).toISOString() : null, // Ensure correct format
+        };
+
+        try {
+            await updateBooking(params.vid, updatedBooking, session.user.token);
+            console.log("Booking updated successfully!");
+        } catch (error) {
+            console.error("Error updating booking:", error);
+        }
+    }
+
+    if (loading) return <div className="text-center text-xl">Loading.   ..</div>;
+    if (!details) return <div className="text-center text-xl">No booking details found.</div>;
+
     return (
         <main className="p-5">
-            <h1 className="text-xl font-medium mb-4">Edit {details.data.campground.name} Booking</h1>
+            <h1 className="text-xl font-medium mb-4">
+                Edit {details.campground?.Name || "Booking"}
+            </h1>
 
-            {/* Name and Lastname input */}
             <TextField
                 variant="standard"
                 label="Name-Lastname"
-                value={nameLastname}
-                onChange={(e) => setNameLastname(e.target.value)}
+                value={details.nameLastname || ""}
+                onChange={(e) => setDetails((prev) => prev ? { ...prev, nameLastname: e.target.value } : prev)}
                 fullWidth
             />
             <br />
 
-            {/* Contact Number input */}
             <TextField
                 variant="standard"
                 label="Contact Number"
-                value={tel}
-                onChange={(e) => setTel(e.target.value)}
+                value={details.tel || ""}
+                onChange={(e) => setDetails((prev) => prev ? { ...prev, tel: e.target.value } : prev)}
                 fullWidth
             />
             <br />
 
-            {/* Campground selection */}
-            {loading && <CircularProgress size={20} sx={{ ml: 1 }} />}
-            <br />
-
             {/* Date Picker */}
-            <DateReserve onDateChange={(value) => setBookDate(value)} selectedDate={bookDate} />
+            <DateReserve
+                onDateChange={(value) =>
+                    setDetails((prev) =>
+                        prev ? { ...prev, bookDate: value ? value.toISOString() : null } : prev
+                    )
+                }
+                selectedDate={details.bookDate ? dayjs(details.bookDate) : null}
+            />
             <br />
 
-            {/* Save button */}
             <Button
                 variant="contained"
                 color="primary"
-                disabled={loading || !nameLastname || !tel || !bookDate}
-                onClick={() => console.log("Booking updated!")}
+                disabled={loading || !details.nameLastname || !details.tel || !details.bookDate}
+                onClick={handleUpdate}
             >
                 Update Booking
             </Button>
