@@ -22,10 +22,15 @@ export default async function TopMenu() {
       )}
 
       {/* The rest of the menu items positioned to the right */}
-      <div className="ml-auto flex items-center space-x-2">
-        <TopMenuItem title="My Booking" pageRef="/mybooking" />
-        <TopMenuItem title="Booking" pageRef="/booking" />
-      </div>
+      {session ? (
+        <div className="ml-auto flex items-center space-x-2">
+          <TopMenuItem title="All Booking" pageRef="/mybooking" />
+          <TopMenuItem title="Booking" pageRef="/booking" />
+        </div>
+      ) : (
+        <div className="ml-auto flex items-center space-x-2">
+        </div>
+      )}
 
       {/* Logo */}
       <Image
