@@ -26,6 +26,7 @@ export default async function TopMenu() {
         <div className="ml-auto flex items-center space-x-2">
           <TopMenuItem title="All Booking" pageRef="/mybooking" />
           <TopMenuItem title="Booking" pageRef="/booking" />
+          <TopMenuItem title="Home" pageRef="/"/>
         </div>
       ) : (
         <div className="ml-auto flex items-center space-x-2">
