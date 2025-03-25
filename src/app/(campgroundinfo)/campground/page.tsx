@@ -11,8 +11,7 @@ import { UserItem } from "../../../../interface";
 import { CampgroundItem } from "../../../../interface";
 
 export default function Card() {
-    const { data: session, status } = useSession(); 
-    const [campgrounds, setCampgrounds] = useState<CampgroundItem[]>([]); // Store multiple campgrounds
+    const { data: session, status } = useSession();
     const [userData, setUserData] = useState<UserItem>({
         user_id: '',
         name: '',
@@ -20,33 +19,49 @@ export default function Card() {
         tel: '',
         role: '',
     });
+    const [campgrounds, setCampgrounds] = useState<CampgroundItem[]>([]); // Store campgrounds data
     const [loading, setLoading] = useState<boolean>(true);
+    const [userLoading, setUserLoading] = useState<boolean>(false); // Loading state for user data
+    
+    // Load campground data immediately
+    const campgroundsPromise = getCampgrounds(); // This is a Promise<CampgroundJson>
 
     useEffect(() => {
-        // Fetching data only on the first mount
-        const fetchData = async () => {
-            if (status === "authenticated" && session?.user?.token) {
-                try {
-                    // Fetching campgrounds and user profile
-                    const fetchedCampgrounds = await getCampgrounds();
-                    setCampgrounds(fetchedCampgrounds);
+        // Fetch campground data immediately
+        const fetchCampgrounds = async () => {
+            try {
+                const fetchedCampgrounds = await campgroundsPromise;
+                setCampgrounds(fetchedCampgrounds.data); // Assuming data is an array of campgrounds
+            } catch (error) {
+                console.error("Error fetching campgrounds:", error);
+            }
+        };
 
+        // Load user data only if there is a session
+        const fetchUserData = async () => {
+            if (session?.user?.token) {
+                setUserLoading(true); // Set loading state for user data
+                try {
                     const fetchedUserData = await getUserProfile(session.user.token);
                     setUserData(fetchedUserData.data);
                 } catch (error) {
-                    console.error("Error fetching data", error);
+                    console.error("Error fetching user data:", error);
                 } finally {
-                    setLoading(false); // Set loading to false after data fetching is complete
+                    setUserLoading(false); // Stop user loading once data is fetched
                 }
             }
         };
 
-        // Fetch data on first render only
-        fetchData();
-    }, []); // Empty dependency array ensures this effect only runs once when the component mounts
+        fetchCampgrounds(); // Fetch campgrounds immediately
+        if (session?.user?.token) {
+            fetchUserData(); // Fetch user data if session is available
+        } else {
+            setLoading(false); // If no session, stop loading for campground data
+        }
+    }, [session]);
 
-    // Show a loading indicator while the data is being fetched
-    if (loading) {
+    // Show a loading indicator while the campground data is being fetched
+    if (loading || userLoading) {
         return <div className="text-center p-5"><LinearProgress /></div>;
     }
 
@@ -54,8 +69,8 @@ export default function Card() {
         <main className="text-center p-5">
             <h1 className="text-xl font-medium">Select Campground</h1>
             <Suspense fallback={<p>Loading...<LinearProgress /></p>}>
-                <CampgroundCatalog campgroundsJson={campgrounds} />
-                <AdminBtn role={userData.role} /> {/* Passing the role to AdminBtn */}
+                <CampgroundCatalog campgroundsJson={campgroundsPromise} />
+                {session?.user?.token && <AdminBtn role={userData.role} />}
             </Suspense>
         </main>
     );
