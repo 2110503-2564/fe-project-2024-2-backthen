@@ -1,7 +1,11 @@
+'use client'
 import getCampgrounds from "@/libs/getCampgrounds"
 import CampgroundCatalog from "@/components/CampgroundCatalog"
 import { LinearProgress } from "@mui/material"
-import { Suspense } from "react"
+import { Suspense, useEffect } from "react"
+import getUserProfile from "@/libs/getUserProfile"
+import { useSession } from "next-auth/react"
+import AdminBtn from "@/components/linkToCreate"
 
 export default async function Card(){
     const campgrounds = await getCampgrounds()
@@ -11,6 +15,7 @@ export default async function Card(){
             <Suspense fallback={<p>Loading...<LinearProgress/></p>}>
             <CampgroundCatalog campgroundsJson={campgrounds}/>
             </Suspense>
+            <AdminBtn/>
         </main>
     )
 }
