@@ -1,6 +1,7 @@
 import Card from "@/components/Card";
 import Link from "next/link";
 import { CampgroundItem, CampgroundJson } from "../../interface";
+import AdminBtn from "./linkToCreate";
 
 export default async function CampgroundCatalog({campgroundsJson}:{campgroundsJson:Promise<CampgroundJson>}) {
     const campgroundsJsonReady = await campgroundsJson

@@ -68,5 +68,5 @@ export interface UserItem {
   name : string
   email : string
   tel :string
-  role : "string"
+  role : string
 }
