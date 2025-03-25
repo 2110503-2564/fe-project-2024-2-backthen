@@ -23,7 +23,6 @@ export default function Card() {
     const [loading, setLoading] = useState<boolean>(true);
     const [userLoading, setUserLoading] = useState<boolean>(false); // Loading state for user data
     
-    // Load campground data immediately
     const campgroundsPromise = getCampgrounds(); // This is a Promise<CampgroundJson>
 
     useEffect(() => {
@@ -44,6 +43,7 @@ export default function Card() {
                 try {
                     const fetchedUserData = await getUserProfile(session.user.token);
                     setUserData(fetchedUserData.data);
+                    console.log(fetchedUserData);
                 } catch (error) {
                     console.error("Error fetching user data:", error);
                 } finally {
@@ -53,12 +53,15 @@ export default function Card() {
         };
 
         fetchCampgrounds(); // Fetch campgrounds immediately
+
         if (session?.user?.token) {
-            fetchUserData(); // Fetch user data if session is available
+            fetchUserData();
+            setLoading(false);
         } else {
-            setLoading(false); // If no session, stop loading for campground data
+            setLoading(false); 
         }
-    }, [session]);
+
+    }, [session?.user?.token]); // Only trigger effect if session token changes
 
     // Show a loading indicator while the campground data is being fetched
     if (loading || userLoading) {
