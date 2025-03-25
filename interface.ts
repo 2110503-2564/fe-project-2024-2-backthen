@@ -12,6 +12,18 @@ export interface CampgroundItem {
   id: string;
 }
 
+export interface createCampgroundItem {
+  name: string;
+  address: string;
+  district: string;
+  province: string;
+  postalcode: string;
+  tel: string;
+  picture: string;
+  dailyrate: number;
+}
+
+
 export interface BookFetchItem{
   _id: string
   apptDate: string
@@ -49,4 +61,12 @@ export interface BookingItem {
   tel: string;
   campground: string;
   bookDate: string;
+}
+
+export interface UserItem {
+  user_id:string
+  name : string
+  email : string
+  tel :string
+  role : "string"
 }
